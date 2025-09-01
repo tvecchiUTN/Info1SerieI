@@ -1,210 +1,108 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "myString.h"
 
 #define IGUALES 0
-#define PRIMMAYSEG 1
-#define PRIMMENSEG -1
+#define MENOR -1
+#define MAYOR 1
 
 int my_strcmp(const char *s1, const char *s2)
 {
-    int dimS1 = my_strlen(s1);
-    int dimS2 = my_strlen(s2);
-
-    int menorTam = (dimS1 < dimS2) ? dimS1 : dimS2;
-
-    for (int i = 0; i < menorTam; i++)
+    int aux;
+    int i;
+    for(i = 0; *(s1+i) != 0; i++)
     {
-        unsigned char c1 = (unsigned char) *(s1 + i);
-        unsigned char c2 = (unsigned char) *(s2 + i);
+        aux = *(s1+i) - *(s2+i);
 
-        if (c1 < c2)
-            return PRIMMENSEG;
-        else if (c1 > c2)
-            return PRIMMAYSEG;
+        if(aux < 0)
+        {
+            return MENOR;
+        }
+        else if(aux > 0)
+        {
+            return MAYOR;
+        }
     }
 
-    if (dimS1 < dimS2)
-        return PRIMMENSEG;
-    else if (dimS1 > dimS2)
-        return PRIMMAYSEG;
-
-    return IGUALES;
-}
-
-
-int my_strncmp(const char *s1, const char *s2, int n)
-{
-    for (int i = 0; i < n; i++)
+    if( (*(s1+i) - *(s2+i)) < 0 )
     {
-        unsigned char c1 = (unsigned char) *(s1+i);
-        unsigned char c2 = (unsigned char) *(s2+i);
-
-        if (c1 < c2)
-            return PRIMMENSEG;
-        else if (c1 > c2)
-            return PRIMMAYSEG;
-        else if (c1 == '\0')
-            return IGUALES;
+        return MENOR;
     }
 
     return IGUALES;
 }
 
-int my_strlen(const char *s)
+int my_strncmp(const char *s1, const char *s2, int sz)
 {
-    int cdadCarac = 0;
-    while(1)
+    int aux;
+    int i;
+    for(i = 0; (*(s1+i)!=0) && (i<sz); i++)
     {
-        if( *(s+cdadCarac) == 0)
+        aux = *(s1+i) - *(s2+i);
+
+        if(aux < 0)
         {
-            break;
+            return MENOR;
         }
-
-        cdadCarac++;
-    }
-
-    return cdadCarac + 1;
-}
-
-char *my_strcpy(char *dst, const char *src)
-{
-    int tamSrc = my_strlen(src);
-
-    for(int i = 0; i<tamSrc; i++)
-    {
-        *(dst+i) = *(src+i);
-    }
-    *(dst+tamSrc) = '\0';
-    return dst;
-}
-
-char *my_strncpy(char *dst, const char *src, int n)
-{
-    int tamSrc = my_strlen(src);
-
-    if(n<tamSrc)
-    {
-        for(int i = 0; i<n; i++)
-            *(dst+i) = *(src+i);
-
-    }
-    else
-    {
-        return NULL;
-    }
-
-
-    return dst;
-}
-
-char *my_strcat(char *dst, const char *src)
-{
-    int tamDst = my_strlen(dst);
-    int i = 0;
-    while(1)
-    {
-        if( *(src+i) == 0)
+        else if(aux > 0)
         {
-            break;
-        }
-
-        *(dst+tamDst) = *(src+i);
-
-        i++;
-        tamDst++;
-    }
-
-    return dst;
-}
-
-char *my_strncat(char *dst, const char *src, int n)
-{
-    int tamDst = my_strlen(dst);
-
-    if(n < my_strlen(src))
-    {
-
-        for(int i = 0; i < n; i++)
-        {
-            *(dst+tamDst) = *(src+i);
-            tamDst++;
-        }
-    }
-    else
-    {
-        return NULL;
-    }
-
-    //*(dst+n) = 0;
-
-    return dst;
-}
-
-char *my_strchr(char *s, int c)
-{
-    int dimS = my_strlen(s);
-    for(int i = 0; i<dimS; i++)
-    {
-        if( *(s+i) == c)
-        {
-            return s+i;
+            return MAYOR;
         }
     }
 
-    return NULL;
+    if( (*(s1+i) - *(s2+i)) < 0 )
+    {
+        return MENOR;
+    }
+
+    return IGUALES;
 }
 
-char *my_strstr(char *s1, const char *s2)
+size_t my_strlen(const char *s)
 {
-    if (!*s2)
-    {
-        return s1;
-    }
-
-
-    for (int i = 0; *(s1+i) != 0; i++)
-    {
-        int j = 0;
-        while ( (*(s1+i+j) == *(s2+j)) && (*(s2+j) != '\0'))
-        {
-            j++;
-        }
-
-        if ( *(s2+j) == '\0')
-            return (s1+i);
-    }
-
-    return NULL;
-}
-
-int my_strspn(const char *s1, const char *s2)
-{
-    int i = 0;
-
-    while (*(s1+i) != '\0')
-    {
-        if (my_strchr((char *)s2, *(s1+i)) == NULL)
-            return i;
-
-        i++;
-    }
+    int i;
+    for(i = 0; *(s+i) != 0; i++);
 
     return i;
 }
 
-char *my_strpbrk(char *s1, char *s2)
+char *my_strcpy(char *dest, const char *src)
 {
-    char *pos;
-    for(int i = 0; *(s1+i) != '\0'; i++)
+    dest = NULL;
+
+    int sz = my_strlen(src) + 1;
+
+    dest = (char *) malloc(sz * sizeof(char *));
+    if(dest == NULL)
     {
-        pos = my_strchr(s2, *(s1+i));
-        if( pos != NULL)
-        {
-            return s1+i;
-        }
+        return NULL;
     }
 
-    return NULL;
+    for(int i = 0; i < sz; i++)
+    {
+        *(dest+i) = *(src+i);
+    }
+    return dest;
 }
 
+char *my_strncpy(char *dest, const char *src, size_t n)
+{
+    dest = NULL;
 
+    int sz = my_strlen(src) + 1;
+
+    dest = (char *) malloc((n+1) * sizeof(char *));
+    if(dest == NULL)
+    {
+        return NULL;
+    }
+
+    for(int i = 0; (i < n) && (i < sz); i++)
+    {
+        *(dest+i) = *(src+i);
+    }
+
+    *(dest+n) = 0;
+
+    return dest;
+}
